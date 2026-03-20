@@ -3,6 +3,7 @@ package src.attendance.view;
 import src.attendance.controller.AuthController;
 import src.attendance.model.User;
 
+import src.attendance.model.Enums.Role;
 import javax.swing.*;
 import java.awt.*;
 
@@ -114,8 +115,8 @@ public class LoginPanel extends JPanel {
             return;
         }
 
-        schoolIdField.setText("");
-        JOptionPane.showMessageDialog(this, "Welcome, " + user.getFullName() + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-        // TODO:Navigate to the appropriate dashboard based on the user's role
+        if (user.getRole() == Role.instructor) {
+             MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(user));
+        }
     }
 }

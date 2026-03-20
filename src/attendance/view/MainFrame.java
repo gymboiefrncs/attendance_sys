@@ -27,6 +27,11 @@ public class MainFrame extends JFrame {
     cardLayout.show(mainPanel, panelName);
   }
 
+  public static void navigateTo(String panelName, JPanel newPanel) {
+    mainPanel.add(newPanel, panelName);
+    cardLayout.show(mainPanel, panelName);
+  } 
+
   public static void main(String[] args) {
     SwingUtilities.invokeLater(() -> {
         new MainFrame().setVisible(true);
