@@ -115,7 +115,7 @@ public class LoginPanel extends JPanel {
         }
 
         schoolIdField.setText("");
-
+        JOptionPane.showMessageDialog(this, "Welcome, " + user.getFullName() + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
         // TODO:Navigate to the appropriate dashboard based on the user's role
     }
 }

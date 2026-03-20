@@ -45,7 +45,7 @@ public class UserDAO {
   }
 
   public boolean insertStudent(String schoolID, String fullName) {
-    String  query = "INSERT INTO users (school_id, full_name, role) VALUES (?, ?)";
+    String  query = "INSERT INTO users (school_id, full_name) VALUES (?, ?)";
 
     try {
       PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query);

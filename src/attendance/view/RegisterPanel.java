@@ -35,6 +35,7 @@ public class RegisterPanel extends JPanel {
     // --- Subtitle ---
     JLabel subtitleLabel = new JLabel("Create a new account", SwingConstants.CENTER);
     subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+    subtitleLabel.setForeground(Color.GRAY);
     gbc.gridy = 1;
     gbc.insets = new Insets(0, 0, 28, 0);
     formPanel.add(subtitleLabel, gbc);
@@ -91,16 +92,17 @@ public class RegisterPanel extends JPanel {
     registerButton.addActionListener(e -> handleRegister());
 
     // --- Back to Login Link ---
-    JButton backButton = new JButton("Already have an account? Log in here");
-    backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    backButton.setBackground(Color.BLUE);
-    backButton.setBorderPainted(false);
-    backButton.setFocusPainted(false);
-    backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    backButton.addActionListener(e -> MainFrame.navigateTo("LoginPanel"));
+    JButton loginButton = new JButton("Already have an account? Log in here");
+    loginButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+    loginButton.setForeground(Color.BLUE);
+    loginButton.setBorderPainted(false);
+    loginButton.setFocusPainted(false);
+    loginButton.setContentAreaFilled(false);
+    loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    loginButton.addActionListener(e -> MainFrame.navigateTo("LoginPanel"));
         gbc.gridy = 8;
     gbc.insets = new Insets(10, 0, 0, 0);
-    formPanel.add(backButton, gbc);
+    formPanel.add(loginButton, gbc);
 
     add(formPanel);
   }
@@ -118,6 +120,7 @@ public class RegisterPanel extends JPanel {
       return;
     }
     
+    JOptionPane.showMessageDialog(this, "Registration successful! You can now log in.", "Success", JOptionPane.INFORMATION_MESSAGE);
     // TODO: navigate to dashbaord after successful registration
     
   }
