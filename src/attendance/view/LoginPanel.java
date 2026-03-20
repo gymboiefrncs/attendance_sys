@@ -88,7 +88,7 @@ public class LoginPanel extends JPanel {
         signUpButton.setBorderPainted(false);
         signUpButton.setContentAreaFilled(false);
         signUpButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        signUpButton.addActionListener(e -> MainFrame.navigateTo("StudentRegisterPanel"));
+        signUpButton.addActionListener(e -> MainFrame.navigateTo("RegistrationPanel"));
         gbc.gridy = 6;
         gbc.insets = new Insets(0, 0, 0, 0);
         formPanel.add(signUpButton, gbc);

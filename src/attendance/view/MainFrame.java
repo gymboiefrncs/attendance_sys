@@ -8,18 +8,15 @@ public class MainFrame extends JFrame {
   // container for all panels. this holds all the panels stacked together.
   private static JPanel mainPanel = new JPanel(cardLayout);
 
-  private static MainFrame instance;
 
   public MainFrame() {
-    instance = this;
-
     setTitle("Attendance Management System");
     setSize(800, 600);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     mainPanel.setBackground(new Color(245, 1, 1));
     mainPanel.add(new LoginPanel(), "LoginPanel");
-    // mainPanel.add(new registrationPanel(), "RegistrationPanel");
+    mainPanel.add(new RegisterPanel(), "RegistrationPanel");
 
     add(mainPanel);
 

@@ -2,7 +2,6 @@ package src.attendance.view;
 
 import javax.swing.*;
 import java.awt.*;
-import src.attendance.model.User;
 import src.attendance.controller.AuthController;
 
 public class RegisterPanel extends JPanel {
@@ -94,7 +93,7 @@ public class RegisterPanel extends JPanel {
     // --- Back to Login Link ---
     JButton backButton = new JButton("Already have an account? Log in here");
     backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    backButton.setBackground(Color.WHITE);
+    backButton.setBackground(Color.BLUE);
     backButton.setBorderPainted(false);
     backButton.setFocusPainted(false);
     backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -111,11 +110,6 @@ public class RegisterPanel extends JPanel {
 
     String schoolID = schoolIDField.getText().trim();
     String fullName = fullNameField.getText().trim();
-
-    if(schoolID.isEmpty() || fullName.isEmpty()) {
-      errorLabel.setText("Please fill in all fields.");
-      return;
-    }
 
     String error = authController.register(schoolID, fullName);
 
