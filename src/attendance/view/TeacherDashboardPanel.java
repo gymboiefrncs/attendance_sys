@@ -139,6 +139,7 @@ public class TeacherDashboardPanel extends JPanel {
         // --- Summary button ---
         JButton summaryButton = new JButton("Summary");
         summaryButton.setBounds(CARD_W - 112, 10, 100, 24);
+        summaryButton.addActionListener(e -> MainFrame.navigateTo("TeacherAttendanceSummaryPanel", new TeacherAttendanceSummaryPanel(cls.getClassID())));
         card.add(summaryButton);
 
         // --- Warning / Dropout labels ---
