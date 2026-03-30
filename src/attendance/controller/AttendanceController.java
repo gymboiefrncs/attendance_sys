@@ -5,12 +5,17 @@ import java.util.List;
 import src.attendance.dao.AttendanceDAO;
 import src.attendance.model.Attendance;
 import src.attendance.model.Summary;
+import src.attendance.model.StudentSummary;
 
 public class AttendanceController {
   private AttendanceDAO attendanceDAO = new AttendanceDAO();
 
   public List<Summary> getAttendanceByClassID(int classID, Date date) {
     return attendanceDAO.getAttendance(classID,date);
+  }
+
+  public List<StudentSummary> getAttendanceByClassID(String studentID, Date date, int classID) {
+    return attendanceDAO.getAttendanceByStudentID(studentID, date, classID);
   }
 
   public String markAttendance(int enrollmentID, String state, String reason) {

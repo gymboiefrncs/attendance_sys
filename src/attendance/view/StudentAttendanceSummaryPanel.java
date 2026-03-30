@@ -5,10 +5,10 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import src.attendance.controller.AttendanceController;
-import src.attendance.model.Summary;
+import src.attendance.model.StudentSummary;
 import java.util.Date;
 
-public class TeacherAttendanceSummaryPanel extends JPanel {
+public class StudentAttendanceSummaryPanel extends JPanel {
 
     private static final int PANEL_WIDTH = 900;
     private static final int PANEL_HEIGHT = 600;
@@ -20,7 +20,10 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
     private AttendanceController attendanceController = new AttendanceController();
 
     private int classId;
-    public TeacherAttendanceSummaryPanel(int classId) {
+    private String studentId;
+
+    public StudentAttendanceSummaryPanel(String studentId, int classId) {
+        this.studentId = studentId;
         this.classId = classId;
 
         setLayout(null);
@@ -40,7 +43,7 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
 
         // --- Table ---
         tableModel = new DefaultTableModel(
-                new Object[]{"Date", "Student Name", "Status", "Reason"}, 0
+                new Object[]{"Date", "Status", "Reason"}, 0
         );
 
         JSpinner dateSpinner = new JSpinner(new SpinnerDateModel());
@@ -71,14 +74,13 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
     }
 
     private void loadAttendanceByDate(Date date) {
-        List<Summary> records = attendanceController.getAttendanceByClassID(classId, date);
+        List<StudentSummary> records = attendanceController.getAttendanceByClassID(studentId, date, classId);
 
         tableModel.setRowCount(0); 
 
-        for (Summary a : records) {
+        for (StudentSummary a : records) {
             tableModel.addRow(new Object[]{
                     a.getDate(),
-                    a.getFullName(),
                     a.getState(),
                     a.getReason()
             });
