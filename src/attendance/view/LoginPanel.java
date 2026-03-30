@@ -1,98 +1,80 @@
 package src.attendance.view;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import src.attendance.controller.AuthController;
 import src.attendance.model.User;
-
 import src.attendance.model.Enums.Role;
-import javax.swing.*;
-import java.awt.*;
 
 public class LoginPanel extends JPanel {
+
+    private static final int PANEL_WIDTH  = 900;
+    private static final int PANEL_HEIGHT = 600;
+
+    private static final int FORM_W = 380;
+    private static final int FORM_H = 341;
 
     private JTextField schoolIdField;
     private JLabel errorLabel;
     private AuthController authController = new AuthController();
 
     public LoginPanel() {
-        setLayout(new GridBagLayout());
-        setBackground(new Color(245, 245, 245));
+        setLayout(null);
+        setPreferredSize(new java.awt.Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(40, 50, 40, 50)
-        ));
+        int formX = (PANEL_WIDTH  - FORM_W) / 2;
+        int formY = (PANEL_HEIGHT - FORM_H) / 2;
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        JPanel formPanel = new JPanel(null);
+        formPanel.setBounds(formX, formY, FORM_W, FORM_H);
+        formPanel.setBorder(BorderFactory.createEmptyBorder());
 
-        gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
+        int x = 50, w = 280;
 
         // --- Title ---
         JLabel titleLabel = new JLabel("Attendance System - Login", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 4, 0); // small gap below title
-        formPanel.add(titleLabel, gbc);
+        titleLabel.setBounds(x, 40, w, 25);
+        formPanel.add(titleLabel);
 
         // --- Subtitle ---
         JLabel subtitleLabel = new JLabel("Log in to continue", SwingConstants.CENTER);
-        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        subtitleLabel.setForeground(Color.GRAY);
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 28, 0);
-        formPanel.add(subtitleLabel, gbc);
+        subtitleLabel.setBounds(x, 69, w, 25);
+        formPanel.add(subtitleLabel);
 
         // --- School ID Label ---
         JLabel idLabel = new JLabel("School ID");
-        idLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
-        gbc.gridy = 2;
-        gbc.insets = new Insets(0, 0, 6, 0);
-        formPanel.add(idLabel, gbc);
+        idLabel.setBounds(x, 122, w, 20);
+        formPanel.add(idLabel);
 
         // --- School ID Field ---
         schoolIdField = new JTextField();
-        schoolIdField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        schoolIdField.setPreferredSize(new Dimension(280, 35));
-        schoolIdField.addActionListener(e -> handleLogin()); // Enter key triggers login
-        gbc.gridy = 3;
-        gbc.insets = new Insets(0, 0, 6, 0);
-        formPanel.add(schoolIdField, gbc);
+        schoolIdField.setBounds(x, 148, w, 35);
+        schoolIdField.addActionListener(e -> handleLogin());
+        formPanel.add(schoolIdField);
 
         // --- Error Label ---
         errorLabel = new JLabel(" ", SwingConstants.CENTER);
-        errorLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        errorLabel.setForeground(new Color(200, 50, 50));
-        gbc.gridy = 4; 
-        gbc.insets = new Insets(0, 0, 10, 0);
-        formPanel.add(errorLabel, gbc);
+        errorLabel.setBounds(x, 189, w, 20);
+        formPanel.add(errorLabel);
 
         // --- Login Button ---
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        loginButton.setBackground(new Color(50, 100, 200));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setFocusPainted(false);
-        loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        loginButton.setPreferredSize(new Dimension(280, 38));
+        loginButton.setBounds(x, 219, w, 38);
         loginButton.addActionListener(e -> handleLogin());
-        gbc.gridy = 5;
-        gbc.insets = new Insets(0, 0, 14, 0);
-        formPanel.add(loginButton, gbc);
+        formPanel.add(loginButton);
 
         // --- Sign Up Link ---
         JButton signUpButton = new JButton("New student? Sign up here");
-        signUpButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        signUpButton.setForeground(new Color(50, 100, 200));
         signUpButton.setBorderPainted(false);
         signUpButton.setContentAreaFilled(false);
-        signUpButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        signUpButton.setBounds(x, 271, w, 30);
         signUpButton.addActionListener(e -> MainFrame.navigateTo("RegistrationPanel"));
-        gbc.gridy = 6;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        formPanel.add(signUpButton, gbc);
+        formPanel.add(signUpButton);
 
         add(formPanel);
     }
@@ -116,7 +98,9 @@ public class LoginPanel extends JPanel {
         }
 
         if (user.getRole() == Role.instructor) {
-             MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(user));
+            MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(user));
+        } else {
+            MainFrame.navigateTo("StudentDashboardPanel", new StudentDashboardPanel(user));
         }
     }
 }

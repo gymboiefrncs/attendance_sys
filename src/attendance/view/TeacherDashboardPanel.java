@@ -1,279 +1,322 @@
 package src.attendance.view;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
 import java.util.List;
-import java.awt.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import src.attendance.controller.ClassController;
 import src.attendance.model.Class_;
 import src.attendance.model.User;
 
 public class TeacherDashboardPanel extends JPanel {
-  private User instructor;
-  private ClassController classController = new ClassController();
-  private JTextField classNameField, warningLimitField, dropoutLimitField;
-  private JLabel errorLabel;
 
-  public TeacherDashboardPanel(User instructor) {
-    this.instructor = instructor;
+    private static final int PANEL_WIDTH  = 900;
+    private static final int PANEL_HEIGHT = 600;
+    private static final int TOP_BAR_H   = 50;
+    private static final int HEADER_H    = 45;
 
-    setLayout(new BorderLayout());
-    setBackground(new Color(245, 245, 245));
-    add(buildTopBar(), BorderLayout.NORTH);
-    add(buildContentArea(), BorderLayout.CENTER);
-  }
+    // Card grid constants
+    private static final int CARD_W   = 270;
+    private static final int CARD_H   = 150;
+    private static final int CARD_GAP = 14;
+    private static final int GRID_PAD = 10;
 
-  private JPanel buildTopBar() {
-    JPanel topBar = new JPanel(new BorderLayout());
-    topBar.setBackground(Color.WHITE);
-    topBar.setBorder(BorderFactory.createCompoundBorder(
-                  BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)),
-            new EmptyBorder(10, 16, 10, 16)
-    ));
+    private User instructor;
+    private ClassController classController = new ClassController();
+    private JTextField classNameField, warningLimitField, dropoutLimitField;
+    private JLabel errorLabel;
 
-    JLabel welcomeLabel = new JLabel("Welcome, " + instructor.getFullName() + "!");
-    welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+    public TeacherDashboardPanel(User instructor) {
+        this.instructor = instructor;
+        setLayout(null);
+        setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 
-    JLabel roleLabel = new JLabel("Role: " + instructor.getRole());
-    roleLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    roleLabel.setForeground(Color.GRAY);
-
-    JPanel leftSide = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,0));
-    leftSide.setBackground(Color.WHITE);
-    leftSide.add(welcomeLabel);
-    leftSide.add(Box.createRigidArea(new Dimension(10, 0)));
-    leftSide.add(roleLabel);
-
-    JButton logoutButton = new JButton("Logout");
-    logoutButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    logoutButton.setFocusPainted(false);
-    logoutButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    logoutButton.addActionListener(e -> {
-        MainFrame.navigateTo("LoginPanel");
-    });
-    topBar.add(leftSide, BorderLayout.WEST);
-    topBar.add(logoutButton, BorderLayout.EAST);
-    return topBar;
-  }
-
-
-  private JPanel buildContentArea() {
-    JPanel contentArea = new JPanel(new BorderLayout());
-    contentArea.setBackground(Color.WHITE);
-    contentArea.setBorder(new EmptyBorder(16, 16, 16, 16));
-
-    JPanel header = new JPanel(new BorderLayout());
-    header.setBackground(new Color(245, 245, 245));
-    header.setBorder(new EmptyBorder(16, 16, 16, 16));
-
-    JLabel titleLabel = new JLabel("My classes");
-    titleLabel.setFont(new Font("sansSerif", Font.BOLD, 15));
-
-    JButton addClassButton = new JButton("+ New Class");
-    addClassButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    addClassButton.setForeground(new Color(24, 95, 165));
-    addClassButton.setBackground(new Color(230, 241, 251));
-    addClassButton.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(new Color(24, 95, 165, 80)),
-        new EmptyBorder(5, 12, 5, 12)
-    ));
-    addClassButton.addActionListener(e -> showNewClassDialog());
-    header.add(titleLabel, BorderLayout.WEST);
-    header.add(addClassButton, BorderLayout.EAST);
-
-    JPanel classGridPanel = buildClassList();
-    JScrollPane scrollPane = new JScrollPane(classGridPanel);
-    scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-    contentArea.add(header, BorderLayout.NORTH);
-    contentArea.add(scrollPane, BorderLayout.CENTER);
-    return contentArea;
-  }
-
-  private JPanel buildClassList() {
-
-    List<Class_> classes = classController.getAllClasses(instructor.getSchoolID());
-    
-    JPanel classListPanel = new JPanel(new BorderLayout());
-    classListPanel.setBackground(Color.WHITE);
-    if (classes.isEmpty()) {
-      JLabel emptyLabel = new JLabel("You haven't created any classes yet.");
-      emptyLabel.setFont(new Font("SansSerif", Font.ITALIC, 14));
-      emptyLabel.setForeground(Color.GRAY);
-      emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-      classListPanel.add(emptyLabel, BorderLayout.CENTER);
-      return classListPanel;
-    }
-    JPanel gridPanel = new JPanel(new GridLayout(0, 2, 16, 16));
-    gridPanel.setBackground(Color.WHITE);
-
-    for (Class_ cls : classes) {
-      gridPanel.add(buildClassCard(cls));
+        buildTopBar();
+        buildContentArea();
     }
 
-    System.out.println(classes);
-    classListPanel.add(gridPanel, BorderLayout.NORTH);
-    return classListPanel;
-  }
+    private void buildTopBar() {
+        JPanel topBar = new JPanel(null);
+        topBar.setBounds(0, 0, PANEL_WIDTH, TOP_BAR_H);
 
-  private JPanel buildClassCard(Class_ cls) {
-    JPanel card = new JPanel(new GridBagLayout());
-    card.setBackground(Color.WHITE);
-    card.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(new Color(220, 220, 220)),
-        new EmptyBorder(12, 16, 12, 16)
-    ));
+        JLabel welcomeLabel = new JLabel("Welcome, " + instructor.getFullName() + "!");
+        welcomeLabel.setBounds(10, 8, 350, 18);
+        topBar.add(welcomeLabel);
 
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.weightx = 1.0; 
-    JLabel classNameLabel = new JLabel(cls.getClassName());
-    classNameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-    gbc.gridy = 0;
-    gbc.insets = new Insets(0, 0, 2, 0);
-    card.add(classNameLabel, gbc);
+        JLabel roleLabel = new JLabel("Role: " + instructor.getRole());
+        roleLabel.setBounds(10, 26, 350, 18);
+        topBar.add(roleLabel);
 
-    JPanel actionRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-    actionRow.setBackground(Color.WHITE);
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBounds(PANEL_WIDTH - 85, 10, 80, 30);
+        logoutButton.addActionListener(e -> MainFrame.navigateTo("LoginPanel"));
+        topBar.add(logoutButton);
 
-    JButton markButton = new JButton("Mark Attendance");
-    markButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    JButton summaryButton = new JButton("View Summary");
-    summaryButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    JButton deleteButton = new JButton("Delete");
-    deleteButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    JButton editButton = new JButton("Edit");
-    editButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-
-    actionRow.add(markButton);
-    actionRow.add(summaryButton);
-    actionRow.add(deleteButton);
-    actionRow.add(editButton);
-
-    gbc.gridy = 3;
-    gbc.insets = new Insets(0, 0, 0, 0);
-    card.add(actionRow, gbc);
-
-    return card;
-  }
-
-  private void showNewClassDialog() {
-    JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Class", true);
-    dialog.setSize(360, 460);
-    dialog.setLocationRelativeTo(this);
-    dialog.setResizable(false);
-
-    JPanel formPanel = new JPanel(new GridBagLayout());
-    formPanel.setBackground(Color.WHITE);
-    formPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    
-
-        // --- Class Name ---
-    JLabel nameLabel = new JLabel("Class Name");
-    nameLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
-    gbc.gridy = 0;
-    gbc.insets = new Insets(0, 0, 6, 0);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.weightx = 1.0;
-
-    formPanel.add(nameLabel, gbc);
-
-    classNameField = new JTextField();
-    classNameField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-    classNameField.setPreferredSize(new Dimension(280, 35));
-    gbc.gridy = 1; // Moved to follow label
-    gbc.insets = new Insets(0, 0, 12, 0); // Extra bottom space
-    formPanel.add(classNameField, gbc);
-
-    // --- Warning Limit ---
-    JLabel warningLabel = new JLabel("Consecutive absences before warning limit");
-    warningLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
-    gbc.gridy = 2;
-    gbc.insets = new Insets(0, 0, 6, 0);
-    formPanel.add(warningLabel, gbc);
-
-    warningLimitField = new JTextField(); // Added new field
-    warningLimitField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-    warningLimitField.setPreferredSize(new Dimension(280, 35));
-    gbc.gridy = 3;
-    gbc.insets = new Insets(0, 0, 12, 0);
-    formPanel.add(warningLimitField, gbc);
-
-    // --- Dropout Limit ---
-    JLabel dropoutLabel = new JLabel("Consecutive absences before dropout");
-    dropoutLabel.setFont(new Font("sansSerif", Font.BOLD, 13));
-    gbc.gridy = 4;
-    gbc.insets = new Insets(0, 0, 6, 0);
-    formPanel.add(dropoutLabel, gbc);
-
-    dropoutLimitField = new JTextField(); // Added new field
-    dropoutLimitField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-    dropoutLimitField.setPreferredSize(new Dimension(280, 35));
-    gbc.gridy = 5;
-    gbc.insets = new Insets(0, 0, 12, 0);
-    formPanel.add(dropoutLimitField, gbc);
-
-    // --- Error Label ---
-    errorLabel = new JLabel(" ", SwingConstants.CENTER);
-    errorLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    errorLabel.setForeground(new Color(200, 50, 50));
-    gbc.gridy = 6;
-    gbc.insets = new Insets(0, 0, 10, 0);
-    formPanel.add(errorLabel, gbc);
-
-    JButton createButton = new JButton("Create");
-    createButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-    createButton.setBackground(new Color(50, 100, 200));
-    createButton.setForeground(Color.WHITE);
-    createButton.setFocusPainted(false);
-    createButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    createButton.setPreferredSize(new Dimension(280, 38));
-    formPanel.add(createButton, gbc);
-
-    createButton.addActionListener(e ->handleCreateClass(dialog));
-    dialog.add(formPanel);
-    dialog.setVisible(true);
-  }
-
-  private void handleCreateClass(JDialog dialog) {
-    errorLabel.setText(" ");
-    String className = classNameField.getText().trim();
-    String warningLimitStr = warningLimitField.getText().trim();
-    String dropoutLimitStr = dropoutLimitField.getText().trim();
-    if (className.isEmpty()) {
-      errorLabel.setText("Class name cannot be empty");
-      return;
-    }
-    if (warningLimitStr.isEmpty() || dropoutLimitStr.isEmpty()) {
-      errorLabel.setText("Warning and dropout limits cannot be empty");
-      return;
-    }
-    int warningLimit, dropoutLimit;
-    try {
-      warningLimit = Integer.parseInt(warningLimitStr);
-      dropoutLimit = Integer.parseInt(dropoutLimitStr);
-    } catch (NumberFormatException ex) {
-      errorLabel.setText("Warning and dropout limits must be valid integers");
-       return;
+        add(topBar);
     }
 
-    if (warningLimit <= 0 || dropoutLimit <= 0) {
-      errorLabel.setText("Warning and dropout limits must be positive integers");
-       return;
+    private void buildContentArea() {
+        // --- Header row (title + new class button) ---
+        JPanel header = new JPanel(null);
+        header.setBounds(0, TOP_BAR_H, PANEL_WIDTH, HEADER_H);
+
+        JLabel titleLabel = new JLabel("My classes");
+        titleLabel.setBounds(10, 10, 150, 25);
+        header.add(titleLabel);
+
+        JButton addClassButton = new JButton("+ New Class");
+        addClassButton.setBounds(PANEL_WIDTH - 130, 8, 120, 30);
+        addClassButton.addActionListener(e -> showNewClassDialog());
+        header.add(addClassButton);
+
+        add(header);
+
+        // --- Scrollable class grid ---
+        JPanel classGridPanel = buildClassList();
+        JScrollPane scrollPane = new JScrollPane(classGridPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBounds(0, TOP_BAR_H + HEADER_H, PANEL_WIDTH, PANEL_HEIGHT - TOP_BAR_H - HEADER_H);
+        add(scrollPane);
     }
 
-    String error = classController.addClass(className, instructor.getSchoolID(), warningLimit, dropoutLimit);
-    if (error != null) {
-      errorLabel.setText(error);
-      return;
+    private JPanel buildClassList() {
+        List<Class_> classes = classController.getAllClasses(instructor.getSchoolID());
+        JPanel listPanel = new JPanel(null);
+
+        if (classes.isEmpty()) {
+            JLabel emptyLabel = new JLabel("You haven't created any classes yet.", SwingConstants.CENTER);
+            emptyLabel.setBounds(0, 20, PANEL_WIDTH, 25);
+            listPanel.add(emptyLabel);
+            listPanel.setPreferredSize(new Dimension(PANEL_WIDTH, 70));
+            return listPanel;
+        }
+
+        int cols = 3;
+        int rows = (int) Math.ceil((double) classes.size() / cols);
+        int totalH = GRID_PAD + rows * (CARD_H + CARD_GAP) - CARD_GAP + GRID_PAD;
+        listPanel.setPreferredSize(new Dimension(PANEL_WIDTH, totalH));
+
+        for (int i = 0; i < classes.size(); i++) {
+            int col = i % cols;
+            int row = i / cols;
+            int cx = GRID_PAD + col * (CARD_W + CARD_GAP);
+            int cy = GRID_PAD + row * (CARD_H + CARD_GAP);
+            JPanel card = buildClassCard(classes.get(i));
+            card.setBounds(cx, cy, CARD_W, CARD_H);
+            listPanel.add(card);
+        }
+
+        return listPanel;
     }
 
-    dialog.dispose();
-    MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+    private JPanel buildClassCard(Class_ cls) {
+        JPanel card = new JPanel(null);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEtchedBorder(),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
-  }
+        int innerW = CARD_W - 24;
+        Font font = new Font("arial", Font.PLAIN, 10);
+
+        // --- Class name ---
+        JLabel classNameLabel = new JLabel(cls.getClassName());
+        classNameLabel.setFont(classNameLabel.getFont().deriveFont(Font.BOLD, 14f));
+        classNameLabel.setBounds(12, 12, 95, 20);
+        card.add(classNameLabel);
+
+        // --- Summary button ---
+        JButton summaryButton = new JButton("Summary");
+        summaryButton.setBounds(CARD_W - 112, 10, 100, 24);
+        card.add(summaryButton);
+
+        // --- Warning / Dropout labels ---
+        JLabel warningLabel = new JLabel("Warning limit: " + cls.getWarningLimit());
+        warningLabel.setBounds(12, 38, innerW, 18);
+        card.add(warningLabel);
+
+        JLabel dropoutLabel = new JLabel("Dropout limit: " + cls.getDropoutLimit());
+        dropoutLabel.setBounds(12, 60, innerW, 18);
+        card.add(dropoutLabel);
+
+        int btnW = (innerW - 16) / 3;
+        int btnY = CARD_H - 42;
+
+        JButton markButton = new JButton("Mark");
+        markButton.setBounds(12, btnY, btnW, 30);
+        markButton.addActionListener(e -> MainFrame.navigateTo("MarkAttendance", new MarkAttendance(cls.getClassID())));
+        card.add(markButton);
+
+        JButton editButton = new JButton("Edit");
+        editButton.setBounds(12 + (btnW + 8), btnY, btnW, 30);
+        editButton.addActionListener(e -> showUpdateClassDialog(
+                cls.getClassID(), cls.getClassName(), cls.getDropoutLimit(), cls.getWarningLimit()));
+        card.add(editButton);
+
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.setBounds(12 + 2 * (btnW + 8), btnY, btnW, 30);
+        deleteButton.addActionListener(e -> handleDeleteClass(cls.getClassID()));
+        card.add(deleteButton);
+
+        return card;
+    }
+
+    private void showNewClassDialog() {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "New Class", true);
+        dialog.setSize(360, 340);
+        dialog.setLocationRelativeTo(this);
+        dialog.setResizable(false);
+        dialog.setLayout(null);
+
+        int x = 40, w = 280;
+
+        JLabel nameLabel = new JLabel("Class Name");
+        nameLabel.setBounds(x, 20, w, 20);
+        dialog.add(nameLabel);
+
+        classNameField = new JTextField();
+        classNameField.setBounds(x, 44, w, 35);
+        dialog.add(classNameField);
+
+        JLabel warningLabel = new JLabel("Absences before warning");
+        warningLabel.setBounds(x, 89, w, 20);
+        dialog.add(warningLabel);
+
+        warningLimitField = new JTextField();
+        warningLimitField.setBounds(x, 113, w, 35);
+        dialog.add(warningLimitField);
+
+        JLabel dropoutLabel = new JLabel("Absences before dropout");
+        dropoutLabel.setBounds(x, 158, w, 20);
+        dialog.add(dropoutLabel);
+
+        dropoutLimitField = new JTextField();
+        dropoutLimitField.setBounds(x, 182, w, 35);
+        dialog.add(dropoutLimitField);
+
+        errorLabel = new JLabel(" ", SwingConstants.CENTER);
+        errorLabel.setBounds(x, 225, w, 20);
+        dialog.add(errorLabel);
+
+        JButton createButton = new JButton("Create");
+        createButton.setBounds(x, 249, w, 38);
+        createButton.addActionListener(e -> handleCreateClass(dialog));
+        dialog.add(createButton);
+
+        dialog.setVisible(true);
+    }
+
+    private void showUpdateClassDialog(int classID, String className, int dropout_limit, int warning_limit) {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Update Class", true);
+        dialog.setSize(360, 340);
+        dialog.setLocationRelativeTo(this);
+        dialog.setResizable(false);
+        dialog.setLayout(null);
+
+        int x = 40, w = 280;
+
+        JLabel nameLabel = new JLabel("Class Name");
+        nameLabel.setBounds(x, 20, w, 20);
+        dialog.add(nameLabel);
+
+        classNameField = new JTextField(className);
+        classNameField.setBounds(x, 44, w, 35);
+        dialog.add(classNameField);
+
+        JLabel warningLabel = new JLabel("Absences before warning");
+        warningLabel.setBounds(x, 89, w, 20);
+        dialog.add(warningLabel);
+
+        warningLimitField = new JTextField(Integer.toString(warning_limit));
+        warningLimitField.setBounds(x, 113, w, 35);
+        dialog.add(warningLimitField);
+
+        JLabel dropoutLabel = new JLabel("Absences before dropout");
+        dropoutLabel.setBounds(x, 158, w, 20);
+        dialog.add(dropoutLabel);
+
+        dropoutLimitField = new JTextField(Integer.toString(dropout_limit));
+        dropoutLimitField.setBounds(x, 182, w, 35);
+        dialog.add(dropoutLimitField);
+
+        errorLabel = new JLabel(" ", SwingConstants.CENTER);
+        errorLabel.setBounds(x, 225, w, 20);
+        dialog.add(errorLabel);
+
+        JButton updateButton = new JButton("Update");
+        updateButton.setBounds(x, 249, w, 38);
+        updateButton.addActionListener(e -> handleUpdateClass(dialog, classID));
+        dialog.add(updateButton);
+
+        dialog.setVisible(true);
+    }
+
+    private void handleCreateClass(JDialog dialog) {
+        errorLabel.setText(" ");
+        String className = classNameField.getText().trim();
+        String warningLimitStr = warningLimitField.getText().trim();
+        String dropoutLimitStr = dropoutLimitField.getText().trim();
+        if (className.isEmpty() || warningLimitStr.isEmpty() || dropoutLimitStr.isEmpty()) {
+            errorLabel.setText("Please fill all fields.");
+            return;
+        }
+        int warningLimit, dropoutLimit;
+        try {
+            warningLimit = Integer.parseInt(warningLimitStr);
+            dropoutLimit = Integer.parseInt(dropoutLimitStr);
+        } catch (NumberFormatException ex) {
+            errorLabel.setText("Limits must be integers.");
+            return;
+        }
+        classController.addClass(className, instructor.getSchoolID(), warningLimit, dropoutLimit);
+        dialog.dispose();
+        MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+    }
+
+    private void handleUpdateClass(JDialog dialog, int classID) {
+        errorLabel.setText(" ");
+        String className = classNameField.getText().trim();
+        String warningLimitStr = warningLimitField.getText().trim();
+        String dropoutLimitStr = dropoutLimitField.getText().trim();
+        if (className.isEmpty() || warningLimitStr.isEmpty() || dropoutLimitStr.isEmpty()) {
+            errorLabel.setText("Please fill all fields.");
+            return;
+        }
+        int warningLimit, dropoutLimit;
+        try {
+            warningLimit = Integer.parseInt(warningLimitStr);
+            dropoutLimit = Integer.parseInt(dropoutLimitStr);
+        } catch (NumberFormatException ex) {
+            errorLabel.setText("Limits must be integers.");
+            return;
+        }
+        classController.updateClass(classID, className, instructor.getSchoolID(), warningLimit, dropoutLimit);
+        dialog.dispose();
+        MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+    }
+
+    private void handleDeleteClass(int classID) {
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                "Are you sure you want to delete this class?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            classController.deleteClass(classID);
+            MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+        }
+    }
 }

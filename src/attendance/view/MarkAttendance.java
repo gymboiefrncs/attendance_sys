@@ -1,0 +1,110 @@
+package src.attendance.view;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import src.attendance.controller.AttendanceController;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import src.attendance.controller.EnrollmentController;
+import src.attendance.model.Attendance;
+import src.attendance.model.User;
+import src.attendance.model.Enums.State;
+
+public class MarkAttendance extends JPanel {
+
+    private static final int PANEL_WIDTH = 900;
+    private static final int PANEL_HEIGHT = 600;
+    private static final int TABLE_WIDTH = 800;
+    private static final int TABLE_HEIGHT = 470;
+
+    private JTable table;
+    private DefaultTableModel tableModel;
+    private JButton backButton;
+    private List<User> students;
+    private List<Integer> enrollmentIds = new ArrayList<>();
+    private int classId;
+    private EnrollmentController enrollmentController = new EnrollmentController();
+    private AttendanceController attendanceController = new AttendanceController();
+
+    public MarkAttendance(int classId) {
+        this.classId = classId;
+
+        setLayout(null);
+        setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+
+        int tableX = (PANEL_WIDTH - TABLE_WIDTH) / 2;
+        int tableY = (PANEL_HEIGHT - TABLE_HEIGHT) / 2;
+
+        // --- Back BUtton ---
+        backButton = new  JButton("Back");
+        backButton.setBounds(20, 20, 100, 30);
+        backButton.addActionListener(e -> MainFrame.navigateTo("TeacherDashboardPanel"));
+        add(backButton);
+
+        // --- Save Button ---
+        JButton saveButton = new JButton("Save");
+        saveButton.setBounds(PANEL_WIDTH - 135, 20, 100, 30);
+        saveButton.addActionListener(e -> saveAttendance());
+        add(saveButton);
+
+        // --- Date Label ---
+        JLabel dateLabel = new JLabel();
+        dateLabel.setBounds(PANEL_WIDTH - 270, 20, 300, 30);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
+        String currentDate = sdf.format(new Date());
+        dateLabel.setText("Date: " + currentDate);
+        add(dateLabel);
+
+        tableModel = new DefaultTableModel(new Object[]{"Student Name", "Mark", "Reason (excused/late only)"}, 0);
+        table = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(tableX, tableY, TABLE_WIDTH, TABLE_HEIGHT); // Set bounds for scroll pane
+        add(scrollPane);
+
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+
+        TableColumnModel columnModel = table.getColumnModel();
+        TableColumn markColumn = columnModel.getColumn(1);
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Present", "Absent", "Late", "Excused"});
+        markColumn.setCellEditor(new DefaultCellEditor(comboBox));
+
+        loadStudents();
+    }
+
+    private void loadStudents() {
+        students = enrollmentController.getStudents(classId);
+        for (User s : students) {
+            tableModel.addRow(new Object[]{s.getFullName(), "--- Mark attendance ---", ""});
+            System.out.println(s.getFullName());
+            int enrollment = enrollmentController.getEnrollmentID(s.getSchoolID(), classId);
+            enrollmentIds.add(enrollment);
+        }
+    }
+
+   private void saveAttendance() {
+        List<Attendance> attendanceList = new ArrayList<>();
+
+        for (int row = 0; row < tableModel.getRowCount(); row++) {
+            String state = (String) tableModel.getValueAt(row, 1);
+            String reason = (String) tableModel.getValueAt(row, 2);
+
+            User student = students.get(row);
+            int enrollment = -1;
+            if (row < enrollmentIds.size()) {
+                enrollment = enrollmentIds.get(row);
+            } else {
+                enrollment = enrollmentController.getEnrollmentID(student.getSchoolID(), classId);
+            }
+            Attendance attendance = new Attendance(enrollment, State.valueOf(state.toLowerCase()), reason);
+            attendanceList.add(attendance);
+        }
+        
+        attendanceController.batchRecordAttendance(attendanceList);
+    }
+}
