@@ -70,7 +70,6 @@ public class StudentAttendanceSummaryPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(50, 80, 800, 450);
         add(scrollPane);
-
     }
 
     private void loadAttendanceByDate(Date date) {

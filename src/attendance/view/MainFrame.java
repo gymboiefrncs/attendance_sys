@@ -9,8 +9,6 @@ import javax.swing.SwingUtilities;
 
 public class MainFrame extends JFrame {
     private static CardLayout cardLayout = new CardLayout();
-
-    // container for all panels. this holds all the panels stacked together.
     private static JPanel mainPanel = new JPanel(cardLayout);
 
     public MainFrame() {
@@ -18,7 +16,9 @@ public class MainFrame extends JFrame {
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
         mainPanel.setBackground(new Color(245, 1, 1));
+
         mainPanel.add(new LoginPanel(), "LoginPanel");
         mainPanel.add(new RegisterPanel(), "RegistrationPanel");
 

@@ -1,6 +1,4 @@
 package src.attendance.model;
-import java.util.Date;
-
 import src.attendance.model.Enums.State;
 
 public class Attendance {

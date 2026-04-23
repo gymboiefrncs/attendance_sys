@@ -81,7 +81,7 @@ public class StudentDashboardPanel extends JPanel {
     }
 
     private void buildContentArea() {
-        // --- Header row (title + new class button) ---
+        // --- Header row ---
         JPanel header = new JPanel(null);
         header.setBounds(0, TOP_BAR_H, PANEL_WIDTH, HEADER_H);
 

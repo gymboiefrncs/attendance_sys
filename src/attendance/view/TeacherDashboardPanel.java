@@ -68,7 +68,7 @@ public class TeacherDashboardPanel extends JPanel {
     }
 
     private void buildContentArea() {
-        // --- Header row (title + new class button) ---
+        // --- Header row ---
         JPanel header = new JPanel(null);
         header.setBounds(0, TOP_BAR_H, PANEL_WIDTH, HEADER_H);
 
@@ -128,7 +128,6 @@ public class TeacherDashboardPanel extends JPanel {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
         int innerW = CARD_W - 24;
-        Font font = new Font("arial", Font.PLAIN, 10);
 
         // --- Class name ---
         JLabel classNameLabel = new JLabel(cls.getClassName());

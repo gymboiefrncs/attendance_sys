@@ -90,7 +90,6 @@ public class LoginPanel extends JPanel {
         }
 
         User user = authController.login(schoolID);
-
         if (user == null) {
             errorLabel.setText("School ID not found. Please try again.");
             schoolIdField.selectAll();
