@@ -7,6 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import src.attendance.view.auth.LoginPanel;
+import src.attendance.view.auth.RegisterPanel;
+
 public class MainFrame extends JFrame {
     private static CardLayout cardLayout = new CardLayout();
     private static JPanel mainPanel = new JPanel(cardLayout);

@@ -1,14 +1,16 @@
-package src.attendance.view;
+package src.attendance.view.instructor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import src.attendance.controller.AttendanceController;
-import src.attendance.model.Summary;
+import src.attendance.model.InstructorSummary;
+import src.attendance.view.MainFrame;
+
 import java.util.Date;
 
-public class TeacherAttendanceSummaryPanel extends JPanel {
+public class InstructorAttendanceSummaryPanel extends JPanel {
 
     private static final int PANEL_WIDTH = 900;
     private static final int PANEL_HEIGHT = 600;
@@ -20,7 +22,8 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
     private AttendanceController attendanceController = new AttendanceController();
 
     private int classId;
-    public TeacherAttendanceSummaryPanel(int classId) {
+
+    public InstructorAttendanceSummaryPanel(int classId) {
         this.classId = classId;
 
         setLayout(null);
@@ -40,8 +43,7 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
 
         // --- Table ---
         tableModel = new DefaultTableModel(
-                new Object[]{"Date", "Student Name", "Status", "Reason"}, 0
-        );
+                new Object[] { "Date", "Student Name", "Status", "Reason" }, 0);
 
         JSpinner dateSpinner = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd");
@@ -51,15 +53,14 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
 
         JButton filterButton = new JButton("Filter");
         filterButton.setBounds(750, 20, 100, 30);
-        
+
         filterButton.addActionListener(e -> {
             Date selectedDate = (Date) dateSpinner.getValue();
             loadAttendanceByDate(selectedDate);
             System.out.println("Filtering attendance for date: " + selectedDate);
         });
-        
+
         add(filterButton);
-        
 
         table = new JTable(tableModel);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
@@ -71,16 +72,16 @@ public class TeacherAttendanceSummaryPanel extends JPanel {
     }
 
     private void loadAttendanceByDate(Date date) {
-        List<Summary> records = attendanceController.getAttendanceByClassID(classId, date);
+        List<InstructorSummary> records = attendanceController.getAttendanceByClassID(classId, date);
 
-        tableModel.setRowCount(0); 
+        tableModel.setRowCount(0);
 
-        for (Summary a : records) {
-            tableModel.addRow(new Object[]{
-                    a.getDate(),
-                    a.getFullName(),
-                    a.getState(),
-                    a.getReason()
+        for (InstructorSummary a : records) {
+            tableModel.addRow(new Object[] {
+                    a.date(),
+                    a.fullName(),
+                    a.state(),
+                    a.reason()
             });
         }
     }

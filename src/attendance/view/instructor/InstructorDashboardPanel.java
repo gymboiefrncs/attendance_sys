@@ -1,4 +1,4 @@
-package src.attendance.view;
+package src.attendance.view.instructor;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -19,17 +19,18 @@ import javax.swing.SwingUtilities;
 import src.attendance.controller.ClassController;
 import src.attendance.model.Class_;
 import src.attendance.model.User;
+import src.attendance.view.MainFrame;
 
-public class TeacherDashboardPanel extends JPanel {
+public class InstructorDashboardPanel extends JPanel {
 
-    private static final int PANEL_WIDTH  = 900;
+    private static final int PANEL_WIDTH = 900;
     private static final int PANEL_HEIGHT = 600;
-    private static final int TOP_BAR_H   = 50;
-    private static final int HEADER_H    = 45;
+    private static final int TOP_BAR_H = 50;
+    private static final int HEADER_H = 45;
 
     // Card grid constants
-    private static final int CARD_W   = 270;
-    private static final int CARD_H   = 150;
+    private static final int CARD_W = 270;
+    private static final int CARD_H = 150;
     private static final int CARD_GAP = 14;
     private static final int GRID_PAD = 10;
 
@@ -38,7 +39,7 @@ public class TeacherDashboardPanel extends JPanel {
     private JTextField classNameField, warningLimitField, dropoutLimitField;
     private JLabel errorLabel;
 
-    public TeacherDashboardPanel(User instructor) {
+    public InstructorDashboardPanel(User instructor) {
         this.instructor = instructor;
         setLayout(null);
         setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
@@ -51,11 +52,11 @@ public class TeacherDashboardPanel extends JPanel {
         JPanel topBar = new JPanel(null);
         topBar.setBounds(0, 0, PANEL_WIDTH, TOP_BAR_H);
 
-        JLabel welcomeLabel = new JLabel("Welcome, " + instructor.getFullName() + "!");
+        JLabel welcomeLabel = new JLabel("Welcome, " + instructor.fullName() + "!");
         welcomeLabel.setBounds(10, 8, 350, 18);
         topBar.add(welcomeLabel);
 
-        JLabel roleLabel = new JLabel("Role: " + instructor.getRole());
+        JLabel roleLabel = new JLabel("Role: " + instructor.role());
         roleLabel.setBounds(10, 26, 350, 18);
         topBar.add(roleLabel);
 
@@ -92,7 +93,7 @@ public class TeacherDashboardPanel extends JPanel {
     }
 
     private JPanel buildClassList() {
-        List<Class_> classes = classController.getAllClasses(instructor.getSchoolID());
+        List<Class_> classes = classController.getAllClasses(instructor.schoolID());
         JPanel listPanel = new JPanel(null);
 
         if (classes.isEmpty()) {
@@ -130,7 +131,7 @@ public class TeacherDashboardPanel extends JPanel {
         int innerW = CARD_W - 24;
 
         // --- Class name ---
-        JLabel classNameLabel = new JLabel(cls.getClassName());
+        JLabel classNameLabel = new JLabel(cls.className());
         classNameLabel.setFont(classNameLabel.getFont().deriveFont(Font.BOLD, 14f));
         classNameLabel.setBounds(12, 12, 95, 20);
         card.add(classNameLabel);
@@ -138,15 +139,16 @@ public class TeacherDashboardPanel extends JPanel {
         // --- Summary button ---
         JButton summaryButton = new JButton("Summary");
         summaryButton.setBounds(CARD_W - 112, 10, 100, 24);
-        summaryButton.addActionListener(e -> MainFrame.navigateTo("TeacherAttendanceSummaryPanel", new TeacherAttendanceSummaryPanel(cls.getClassID())));
+        summaryButton.addActionListener(e -> MainFrame.navigateTo("TeacherAttendanceSummaryPanel",
+                new InstructorAttendanceSummaryPanel(cls.classID())));
         card.add(summaryButton);
 
         // --- Warning / Dropout labels ---
-        JLabel warningLabel = new JLabel("Warning limit: " + cls.getWarningLimit());
+        JLabel warningLabel = new JLabel("Warning limit: " + cls.warningLimit());
         warningLabel.setBounds(12, 38, innerW, 18);
         card.add(warningLabel);
 
-        JLabel dropoutLabel = new JLabel("Dropout limit: " + cls.getDropoutLimit());
+        JLabel dropoutLabel = new JLabel("Dropout limit: " + cls.dropoutLimit());
         dropoutLabel.setBounds(12, 60, innerW, 18);
         card.add(dropoutLabel);
 
@@ -155,18 +157,18 @@ public class TeacherDashboardPanel extends JPanel {
 
         JButton markButton = new JButton("Mark");
         markButton.setBounds(12, btnY, btnW, 30);
-        markButton.addActionListener(e -> MainFrame.navigateTo("MarkAttendance", new MarkAttendance(cls.getClassID())));
+        markButton.addActionListener(e -> MainFrame.navigateTo("MarkAttendance", new MarkAttendance(cls.classID())));
         card.add(markButton);
 
         JButton editButton = new JButton("Edit");
         editButton.setBounds(12 + (btnW + 8), btnY, btnW, 30);
         editButton.addActionListener(e -> showUpdateClassDialog(
-                cls.getClassID(), cls.getClassName(), cls.getDropoutLimit(), cls.getWarningLimit()));
+                cls.classID(), cls.className(), cls.dropoutLimit(), cls.warningLimit()));
         card.add(editButton);
 
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBounds(12 + 2 * (btnW + 8), btnY, btnW, 30);
-        deleteButton.addActionListener(e -> handleDeleteClass(cls.getClassID()));
+        deleteButton.addActionListener(e -> handleDeleteClass(cls.classID()));
         card.add(deleteButton);
 
         return card;
@@ -279,9 +281,9 @@ public class TeacherDashboardPanel extends JPanel {
             errorLabel.setText("Limits must be integers.");
             return;
         }
-        classController.addClass(className, instructor.getSchoolID(), warningLimit, dropoutLimit);
+        classController.addClass(className, instructor.schoolID(), warningLimit, dropoutLimit);
         dialog.dispose();
-        MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+        MainFrame.navigateTo("TeacherDashboardPanel", new InstructorDashboardPanel(instructor));
     }
 
     private void handleUpdateClass(JDialog dialog, int classID) {
@@ -301,9 +303,9 @@ public class TeacherDashboardPanel extends JPanel {
             errorLabel.setText("Limits must be integers.");
             return;
         }
-        classController.updateClass(classID, className, instructor.getSchoolID(), warningLimit, dropoutLimit);
+        classController.updateClass(classID, className, instructor.schoolID(), warningLimit, dropoutLimit);
         dialog.dispose();
-        MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+        MainFrame.navigateTo("TeacherDashboardPanel", new InstructorDashboardPanel(instructor));
     }
 
     private void handleDeleteClass(int classID) {
@@ -316,7 +318,7 @@ public class TeacherDashboardPanel extends JPanel {
 
         if (result == JOptionPane.YES_OPTION) {
             classController.deleteClass(classID);
-            MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(instructor));
+            MainFrame.navigateTo("TeacherDashboardPanel", new InstructorDashboardPanel(instructor));
         }
     }
 }

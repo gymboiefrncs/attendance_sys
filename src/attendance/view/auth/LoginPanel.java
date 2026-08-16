@@ -1,4 +1,4 @@
-package src.attendance.view;
+package src.attendance.view.auth;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -10,10 +10,13 @@ import javax.swing.SwingConstants;
 import src.attendance.controller.AuthController;
 import src.attendance.model.User;
 import src.attendance.model.Enums.Role;
+import src.attendance.view.MainFrame;
+import src.attendance.view.instructor.InstructorDashboardPanel;
+import src.attendance.view.student.StudentDashboardPanel;
 
 public class LoginPanel extends JPanel {
 
-    private static final int PANEL_WIDTH  = 900;
+    private static final int PANEL_WIDTH = 900;
     private static final int PANEL_HEIGHT = 600;
 
     private static final int FORM_W = 380;
@@ -27,7 +30,7 @@ public class LoginPanel extends JPanel {
         setLayout(null);
         setPreferredSize(new java.awt.Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 
-        int formX = (PANEL_WIDTH  - FORM_W) / 2;
+        int formX = (PANEL_WIDTH - FORM_W) / 2;
         int formY = (PANEL_HEIGHT - FORM_H) / 2;
 
         JPanel formPanel = new JPanel(null);
@@ -96,8 +99,8 @@ public class LoginPanel extends JPanel {
             return;
         }
 
-        if (user.getRole() == Role.instructor) {
-            MainFrame.navigateTo("TeacherDashboardPanel", new TeacherDashboardPanel(user));
+        if (user.role() == Role.instructor) {
+            MainFrame.navigateTo("TeacherDashboardPanel", new InstructorDashboardPanel(user));
         } else {
             MainFrame.navigateTo("StudentDashboardPanel", new StudentDashboardPanel(user));
         }

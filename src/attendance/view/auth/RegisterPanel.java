@@ -1,4 +1,4 @@
-package src.attendance.view;
+package src.attendance.view.auth;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -9,10 +9,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import src.attendance.controller.AuthController;
+import src.attendance.view.MainFrame;
 
 public class RegisterPanel extends JPanel {
 
-    private static final int PANEL_WIDTH  = 900;
+    private static final int PANEL_WIDTH = 900;
     private static final int PANEL_HEIGHT = 600;
 
     private static final int FORM_W = 380;
@@ -26,7 +27,7 @@ public class RegisterPanel extends JPanel {
         setLayout(null);
         setPreferredSize(new java.awt.Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 
-        int formX = (PANEL_WIDTH  - FORM_W) / 2;
+        int formX = (PANEL_WIDTH - FORM_W) / 2;
         int formY = (PANEL_HEIGHT - FORM_H) / 2;
 
         JPanel formPanel = new JPanel(null);

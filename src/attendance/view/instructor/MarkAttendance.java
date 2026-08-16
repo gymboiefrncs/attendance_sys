@@ -1,4 +1,4 @@
-package src.attendance.view;
+package src.attendance.view.instructor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +14,7 @@ import src.attendance.controller.EnrollmentController;
 import src.attendance.model.Attendance;
 import src.attendance.model.User;
 import src.attendance.model.Enums.State;
+import src.attendance.view.MainFrame;
 
 public class MarkAttendance extends JPanel {
 
@@ -42,7 +43,7 @@ public class MarkAttendance extends JPanel {
         int tableY = (PANEL_HEIGHT - TABLE_HEIGHT) / 2;
 
         // --- back BUtton ---
-        backButton = new  JButton("Back");
+        backButton = new JButton("Back");
         backButton.setBounds(20, 20, 100, 30);
         backButton.addActionListener(e -> MainFrame.navigateTo("TeacherDashboardPanel"));
         add(backButton);
@@ -62,7 +63,7 @@ public class MarkAttendance extends JPanel {
         dateLabel.setText("Date: " + currentDate);
         add(dateLabel);
 
-        tableModel = new DefaultTableModel(new Object[]{"Student Name", "Mark", "Reason (excused/late only)"}, 0);
+        tableModel = new DefaultTableModel(new Object[] { "Student Name", "Mark", "Reason (excused/late only)" }, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(tableX, tableY, TABLE_WIDTH, TABLE_HEIGHT);
@@ -72,7 +73,7 @@ public class MarkAttendance extends JPanel {
 
         TableColumnModel columnModel = table.getColumnModel();
         TableColumn markColumn = columnModel.getColumn(1);
-        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Present", "Absent", "Late", "Excused"});
+        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Present", "Absent", "Late", "Excused" });
         markColumn.setCellEditor(new DefaultCellEditor(comboBox));
 
         loadStudents();
@@ -82,16 +83,17 @@ public class MarkAttendance extends JPanel {
         students = enrollmentController.getStudents(classId);
 
         for (User student : students) {
-            tableModel.addRow(new Object[]{student.getFullName(), "--- Mark attendance ---", ""});
-            System.out.println(student.getFullName());
+            tableModel.addRow(new Object[] { student.fullName(), "--- Mark attendance ---", "" });
+            System.out.println(student.fullName());
 
-            // get enrollment id for each student whihc will be used to mark the attendance later
-            int enrollment = enrollmentController.getEnrollmentID(student.getSchoolID(), classId);
+            // get enrollment id for each student whihc will be used to mark the attendance
+            // later
+            int enrollment = enrollmentController.getEnrollmentID(student.schoolID(), classId);
             enrollmentIds.add(enrollment);
         }
     }
 
-   private void saveAttendance() {
+    private void saveAttendance() {
         List<Attendance> attendanceList = new ArrayList<>();
 
         for (int row = 0; row < tableModel.getRowCount(); row++) {
@@ -103,7 +105,7 @@ public class MarkAttendance extends JPanel {
             Attendance attendance = new Attendance(enrollment, State.valueOf(state.toLowerCase()), reason);
             attendanceList.add(attendance);
         }
-        
+
         attendanceController.batchRecordAttendance(attendanceList);
     }
 }

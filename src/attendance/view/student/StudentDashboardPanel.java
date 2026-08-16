@@ -1,4 +1,4 @@
-package src.attendance.view;
+package src.attendance.view.student;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,17 +16,18 @@ import src.attendance.controller.ClassController;
 import src.attendance.model.ClassInfo;
 import src.attendance.model.StudentClasses;
 import src.attendance.model.User;
+import src.attendance.view.MainFrame;
 
 public class StudentDashboardPanel extends JPanel {
 
-    private static final int PANEL_WIDTH  = 900;
+    private static final int PANEL_WIDTH = 900;
     private static final int PANEL_HEIGHT = 600;
-    private static final int TOP_BAR_H   = 50;
-    private static final int HEADER_H    = 45;
+    private static final int TOP_BAR_H = 50;
+    private static final int HEADER_H = 45;
 
     // Card grid constants
-    private static final int CARD_W   = 270;
-    private static final int CARD_H   = 150;
+    private static final int CARD_W = 270;
+    private static final int CARD_H = 150;
     private static final int CARD_GAP = 14;
     private static final int GRID_PAD = 10;
 
@@ -48,11 +49,11 @@ public class StudentDashboardPanel extends JPanel {
         JPanel topBar = new JPanel(null);
         topBar.setBounds(0, 0, PANEL_WIDTH, TOP_BAR_H);
 
-        JLabel welcomeLabel = new JLabel("Welcome, " + student.getFullName() + "!");
+        JLabel welcomeLabel = new JLabel("Welcome, " + student.fullName() + "!");
         welcomeLabel.setBounds(10, 8, 350, 18);
         topBar.add(welcomeLabel);
 
-        JLabel roleLabel = new JLabel("Role: " + student.getRole());
+        JLabel roleLabel = new JLabel("Role: " + student.role());
         roleLabel.setBounds(10, 26, 350, 18);
         topBar.add(roleLabel);
 
@@ -70,7 +71,7 @@ public class StudentDashboardPanel extends JPanel {
         classDropdown.addActionListener(e -> {
             ClassInfo selectedClass = (ClassInfo) classDropdown.getSelectedItem();
             if (selectedClass != null) {
-                enrollmentController.enrollStudent(student.getSchoolID(), selectedClass.getClassId());
+                enrollmentController.enrollStudent(student.schoolID(), selectedClass.classId());
                 MainFrame.navigateTo("StudentDashboardPanel", new StudentDashboardPanel(student));
             }
         });
@@ -99,7 +100,7 @@ public class StudentDashboardPanel extends JPanel {
     }
 
     private JPanel buildClassList() {
-        List<StudentClasses> classes = classController.getAllClassesForStudent(student.getSchoolID());
+        List<StudentClasses> classes = classController.getAllClassesForStudent(student.schoolID());
         JPanel listPanel = new JPanel(null);
 
         if (classes.isEmpty()) {
@@ -137,7 +138,7 @@ public class StudentDashboardPanel extends JPanel {
         int innerW = CARD_W - 24;
 
         // --- Class name ---
-        JLabel classNameLabel = new JLabel(cls.getClassName());
+        JLabel classNameLabel = new JLabel(cls.className());
         classNameLabel.setFont(classNameLabel.getFont().deriveFont(Font.BOLD, 14f));
         classNameLabel.setBounds(12, 12, 95, 20);
         card.add(classNameLabel);
@@ -146,20 +147,20 @@ public class StudentDashboardPanel extends JPanel {
         JButton summaryButton = new JButton("Summary");
         summaryButton.setBounds(CARD_W - 112, 10, 100, 24);
         summaryButton.addActionListener(e -> {
-            MainFrame.navigateTo("StudentAttendanceSummaryPanel", new StudentAttendanceSummaryPanel(student.getSchoolID(), cls.getClassID()));
+            MainFrame.navigateTo("StudentAttendanceSummaryPanel",
+                    new StudentAttendanceSummaryPanel(student.schoolID(), cls.classID()));
         });
         card.add(summaryButton);
 
         // --- Warning / Dropout labels ---
-        JLabel warningLabel = new JLabel("Warning limit: " + cls.getWarningLimit());
+        JLabel warningLabel = new JLabel("Warning limit: " + cls.warningLimit());
         warningLabel.setBounds(12, 38, innerW, 18);
         card.add(warningLabel);
 
-        JLabel dropoutLabel = new JLabel("Dropout limit: " + cls.getDropoutLimit());
+        JLabel dropoutLabel = new JLabel("Dropout limit: " + cls.dropoutLimit());
         dropoutLabel.setBounds(12, 60, innerW, 18);
         card.add(dropoutLabel);
 
-       
         return card;
     }
 }

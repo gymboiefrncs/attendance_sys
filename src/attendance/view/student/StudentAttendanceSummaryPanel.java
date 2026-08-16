@@ -1,4 +1,4 @@
-package src.attendance.view;
+package src.attendance.view.student;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -6,6 +6,8 @@ import java.awt.*;
 import java.util.List;
 import src.attendance.controller.AttendanceController;
 import src.attendance.model.StudentSummary;
+import src.attendance.view.MainFrame;
+
 import java.util.Date;
 
 public class StudentAttendanceSummaryPanel extends JPanel {
@@ -43,8 +45,7 @@ public class StudentAttendanceSummaryPanel extends JPanel {
 
         // --- Table ---
         tableModel = new DefaultTableModel(
-                new Object[]{"Date", "Status", "Reason"}, 0
-        );
+                new Object[] { "Date", "Status", "Reason" }, 0);
 
         JSpinner dateSpinner = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd");
@@ -54,15 +55,14 @@ public class StudentAttendanceSummaryPanel extends JPanel {
 
         JButton filterButton = new JButton("Filter");
         filterButton.setBounds(750, 20, 100, 30);
-        
+
         filterButton.addActionListener(e -> {
             Date selectedDate = (Date) dateSpinner.getValue();
             loadAttendanceByDate(selectedDate);
             System.out.println("Filtering attendance for date: " + selectedDate);
         });
-        
+
         add(filterButton);
-        
 
         table = new JTable(tableModel);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
@@ -75,13 +75,13 @@ public class StudentAttendanceSummaryPanel extends JPanel {
     private void loadAttendanceByDate(Date date) {
         List<StudentSummary> records = attendanceController.getAttendanceByClassID(studentId, date, classId);
 
-        tableModel.setRowCount(0); 
+        tableModel.setRowCount(0);
 
         for (StudentSummary a : records) {
-            tableModel.addRow(new Object[]{
-                    a.getDate(),
-                    a.getState(),
-                    a.getReason()
+            tableModel.addRow(new Object[] {
+                    a.date(),
+                    a.state(),
+                    a.reason()
             });
         }
     }

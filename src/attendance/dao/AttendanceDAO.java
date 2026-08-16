@@ -6,28 +6,28 @@ import src.attendance.util.DBConnection;
 import src.attendance.model.Attendance;
 import src.attendance.model.StudentSummary;
 import src.attendance.model.Enums.State;
-import src.attendance.model.Summary;
+import src.attendance.model.InstructorSummary;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class AttendanceDAO {
 
-    public List<Summary> getAttendance(int classId, Date dateQuery) {
+    public List<InstructorSummary> getAttendance(int classId, Date dateQuery) {
         String sql = """
-                    SELECT 
-                        a.enrollment_id,
-                        a.state, 
-                        a.reason, 
-                        a.session_datetime AS date, 
-                        e.class_id,
-                        u.full_name
-                    FROM attendance a
-                    JOIN enrollments e ON a.enrollment_id = e.enrollment_id
-                    JOIN users u ON e.student_id = u.school_id
-                    WHERE e.class_id = ?
-                    AND DATE(a.session_datetime) = ?
-                    """;
-        List<Summary> attendanceList = new ArrayList<>();
+                SELECT
+                    a.enrollment_id,
+                    a.state,
+                    a.reason,
+                    a.session_datetime AS date,
+                    e.class_id,
+                    u.full_name
+                FROM attendance a
+                JOIN enrollments e ON a.enrollment_id = e.enrollment_id
+                JOIN users u ON e.student_id = u.school_id
+                WHERE e.class_id = ?
+                AND DATE(a.session_datetime) = ?
+                """;
+        List<InstructorSummary> attendanceList = new ArrayList<>();
 
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, classId);
@@ -45,7 +45,7 @@ public class AttendanceDAO {
                 String reason = rs.getString("reason");
                 Date date = rs.getDate("date");
 
-                attendanceList.add(new Summary(classID, enrollId, fullName, date, reason, state));
+                attendanceList.add(new InstructorSummary(classID, enrollId, fullName, date, reason, state));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -55,18 +55,18 @@ public class AttendanceDAO {
 
     public List<StudentSummary> getAttendanceByStudentID(String studentID, Date dateQuery, int classID) {
         String sql = """
-                    SELECT 
-                        a.enrollment_id,
-                        a.state, 
-                        a.reason, 
-                        a.session_datetime AS date, 
-                        e.class_id
-                    FROM attendance a
-                    JOIN enrollments e ON a.enrollment_id = e.enrollment_id
-                    WHERE e.student_id = ?
-                    AND e.class_id = ?
-                    AND DATE(a.session_datetime) = ?
-                    """;
+                SELECT
+                    a.enrollment_id,
+                    a.state,
+                    a.reason,
+                    a.session_datetime AS date,
+                    e.class_id
+                FROM attendance a
+                JOIN enrollments e ON a.enrollment_id = e.enrollment_id
+                WHERE e.student_id = ?
+                AND e.class_id = ?
+                AND DATE(a.session_datetime) = ?
+                """;
         List<StudentSummary> attendanceList = new ArrayList<>();
 
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
@@ -93,30 +93,30 @@ public class AttendanceDAO {
 
     public boolean batchRecordAttendance(List<Attendance> attendanceList) {
         String query = """
-            INSERT INTO attendance (enrollment_id, state, reason)
-            VALUES (?, ?, ?)
-        """;
-    
+                    INSERT INTO attendance (enrollment_id, state, reason)
+                    VALUES (?, ?, ?)
+                """;
+
         Connection conn = null;
-    
+
         try {
             conn = DBConnection.getConnection();
 
             // start transaction since we finna do batch insert
             conn.setAutoCommit(false);
-    
-           PreparedStatement stmt = conn.prepareStatement(query);
+
+            PreparedStatement stmt = conn.prepareStatement(query);
             for (Attendance attendance : attendanceList) {
-                stmt.setInt(1, attendance.getEnrollmentID());
-                stmt.setString(2, attendance.getState().toString());
-                stmt.setString(3, attendance.getReason());
+                stmt.setInt(1, attendance.enrollmentID());
+                stmt.setString(2, attendance.state().toString());
+                stmt.setString(3, attendance.reason());
                 stmt.addBatch();
             }
-    
+
             stmt.executeBatch();
             conn.commit();
             return true;
-    
+
         } catch (SQLException e) {
             if (conn != null) {
                 try {
@@ -128,8 +128,8 @@ public class AttendanceDAO {
             }
             e.printStackTrace();
             return false;
-    
+
         }
     }
-    //TODO: fix reason not saving when marking attendance
+    // TODO: fix reason not saving when marking attendance
 }
