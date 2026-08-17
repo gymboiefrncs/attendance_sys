@@ -93,6 +93,9 @@ public class MarkAttendance extends JPanel {
     }
 
     private void saveAttendance() {
+        if (table.isEditing()) {
+            table.getCellEditor().stopCellEditing();
+        }
         List<Attendance> attendanceList = new ArrayList<>();
 
         for (int row = 0; row < tableModel.getRowCount(); row++) {
@@ -100,7 +103,6 @@ public class MarkAttendance extends JPanel {
             String reason = (String) tableModel.getValueAt(row, 2);
 
             int enrollment = enrollmentIds.get(row); // enrollment id of the student in the current row
-            System.out.print(reason);
             Attendance attendance = new Attendance(enrollment, State.valueOf(state.toLowerCase()), reason);
             attendanceList.add(attendance);
         }
