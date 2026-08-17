@@ -18,7 +18,12 @@ public class EnrollmentDAO {
                     SELECT u.school_id, u.full_name, u.role
                     FROM users u
                     JOIN enrollments e ON u.school_id = e.student_id
-                    WHERE e.class_id = ? AND u.role = 'student'
+                    LEFT JOIN attendance a
+                      ON a.enrollment_id = e.enrollment_id
+                      AND a.session_datetime::date = CURRENT_DATE
+                    WHERE e.class_id = ?
+                      AND u.role = 'student'
+                      AND a.enrollment_id IS NULL
                 """;
 
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
